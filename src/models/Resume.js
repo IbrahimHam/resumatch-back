@@ -30,7 +30,7 @@ const resumeSchema = new mongoose.Schema({
         title: { type: String },
         date: { type: Date }
     }]
-});
+}, { timestamps: true });
 
 const Resume = mongoose.model('Resume', resumeSchema);
 
