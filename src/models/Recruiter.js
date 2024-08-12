@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const recruiterSchema = new mongoose.Schema({
+const recruiterSchema = new Schema({
     email: {
         type: String,
         required: true,
