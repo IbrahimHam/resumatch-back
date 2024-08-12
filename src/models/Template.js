@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const templateSchema = new Schema({
     resumeData: { type: Schema.Types.ObjectId, ref: 'Resume'},

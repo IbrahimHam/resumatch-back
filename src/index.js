@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
+const recruiterRoutes = require('./routes/recruiterRoutes');
+
 
 const app = express();
 connectDB();
@@ -12,6 +14,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Hello, world!');
 });
+
+app.use('/api/recruiter', recruiterRoutes);
 
 app.use(errorHandler);
 
