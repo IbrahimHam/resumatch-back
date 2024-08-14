@@ -128,3 +128,20 @@ exports.getJob = async (req, res, next) => {
     next(new DatabaseError());
   }
 };
+
+// Get all posted jobs for a specific recruiter
+exports.getPostedJobs = async (req, res, next) => {
+  const recruiterId = req.user._id;
+  console.log(recruiterId);
+
+  try {
+    const recruiter = await Recruiter.findById(recruiterId).populate('postedJobs');
+    if (!recruiter) {
+      return next(new NotFoundError('Recruiter not found'));
+    }
+
+    res.status(200).json(recruiter.postedJobs);
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};

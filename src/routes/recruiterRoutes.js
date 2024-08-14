@@ -12,10 +12,6 @@ router.post('/login', loginValidator, validationErrorHandler, recruiterControlle
 
 router.post('/create-company', authMiddleware, recruiterController.createCompany);
 
-// router.post('/create-job', authMiddleware, recruiterController.createJob);
-
-// router.get('/posted-jobs', authMiddleware, recruiterController.getPostedJobs);
-
 router.get('/:id', authMiddleware, recruiterController.getRecruiter);
 
 module.exports = router;
