@@ -102,13 +102,43 @@ exports.createCompany = async (req, res, next) => {
 
     res.status(201).json(company);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    next(new DatabaseError());
   }
 };
 
 // Post a new job
 exports.createJob = async (req, res, next) => {
+  const { title, description, requirements, jobType, location, tags } = req.body;
+  const { recruiterId } = req.user;
+
+  try {
+    const recruiter = await Recruiter.findById(recruiterId);
+    if (!recruiter || !recruiter.companyId) {
+      return next(new ValidationError('Recruiter does not have a company'));
+    }
+
+    // Create new job
+    const job = new Job({
+      title,
+      description,
+      requirements,
+      jobType,
+      location,
+      tags,
+      companyId: recruiter.companyId,
+    });
+
+    await job.save();
+
+    // update recruiter's posted jobs
+    await Recruiter.findByIdAndUpdate(recruiterId, { $push: { postedJobs: job._id } });
+
+    res.status(201).json(job);
+  } catch (error) {
+    next(new DatabaseError());
+  }
 };
+
 
 // Get posted jobs
 exports.getPostedJobs = async (req, res, next) => {
