@@ -1,16 +1,51 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const {version} = require('../package.json');
 const connectDB = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
 const recruiterRoutes = require('./routes/recruiterRoutes');
 const userRoutes = require('./routes/userRoutes');
 
+const options = {
+    definition: {
+      openapi: "3.1.0",
+      info: {
+        title: "Title",
+        version: version,
+        description: "Test description",
+        license: {
+          name: "Test",
+          url: "",
+        },
+        contact: {
+          name: "Name",
+          url: "",
+          email: "",
+        },
+      },
+      servers: [
+        {
+          url: "http://localhost:8080",
+        },
+      ],
+    },
+    apis: ["./src/routes/*.js"], // Eğer rotalarınız src klasörü içindeyse
+  };
 
 const app = express();
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+
+const specs = swaggerJsdoc(options);
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs)
+);
 
 app.get('/', (req, res) => {
     res.send('Hello, world!');
