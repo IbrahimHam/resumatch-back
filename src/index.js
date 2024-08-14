@@ -7,6 +7,7 @@ const connectDB = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
 const recruiterRoutes = require('./routes/recruiterRoutes');
 const userRoutes = require('./routes/userRoutes');
+const jobRoutes = require('./routes/jobRoutes');
 const path = require('path');
 
 const options = {
@@ -35,7 +36,7 @@ const options = {
     apis: [
         // path.resolve(__dirname, 'userSwagger.js'),
         path.resolve(__dirname, './utils/swagger/recruiterSwagger.js'),
-        // path.resolve(__dirname, 'jobSwagger.js'),
+        path.resolve(__dirname, './utils/swagger/jobSwagger.js'),
         // path.resolve(__dirname, 'companySwagger.js'),
     ],
 };
@@ -59,6 +60,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api/recruiter', recruiterRoutes);
+app.use('/api/job', jobRoutes);
 
 app.use(errorHandler);
 
