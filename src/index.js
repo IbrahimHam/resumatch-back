@@ -36,7 +36,7 @@ const options = {
     apis: [
         // path.resolve(__dirname, 'userSwagger.js'),
         path.resolve(__dirname, './utils/swagger/recruiterSwagger.js'),
-        // path.resolve(__dirname, 'jobSwagger.js'),
+        path.resolve(__dirname, './utils/swagger/jobSwagger.js'),
         // path.resolve(__dirname, 'companySwagger.js'),
     ],
 };
