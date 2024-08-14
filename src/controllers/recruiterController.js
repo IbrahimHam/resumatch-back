@@ -83,7 +83,7 @@ exports.loginRecruiter = async (req, res, next) => {
 // Create a new company
 exports.createCompany = async (req, res, next) => {
   const { name, description, image, location, website, employeesNumber } = req.body;
-  const { recruiterId } = req.user;
+  const recruiterId = req.user._id
 
   try {
     const company = new Company({
@@ -109,7 +109,7 @@ exports.createCompany = async (req, res, next) => {
 // Post a new job
 exports.createJob = async (req, res, next) => {
   const { title, description, requirements, jobType, location, tags } = req.body;
-  const { recruiterId } = req.user;
+  const recruiterId = req.user._id
 
   try {
     const recruiter = await Recruiter.findById(recruiterId);
@@ -139,7 +139,39 @@ exports.createJob = async (req, res, next) => {
   }
 };
 
-
 // Get posted jobs
 exports.getPostedJobs = async (req, res, next) => {
+  const recruiterId = req.user._id
+
+  try {
+    const recruiter = await Recruiter.findById(recruiterId).populate('postedJobs');
+    if (!recruiter) {
+      return next(new NotFoundError('Recruiter'));
+    }
+
+    res.status(200).json(recruiter.postedJobs);
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+
+exports.getRecruiter = async (req, res, next) => {
+  try {
+    const recruiterId = req.user._id
+
+    const recruiter = await Recruiter.findById(recruiterId).populate('companyId', 'name location');
+
+    if (!recruiter) {
+      return next(new NotFoundError('Recruiter'));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        recruiter
+      }
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
 };
