@@ -3,6 +3,7 @@ const cors = require('cors');
 const connectDB = require('./config/database');
 const errorHandler = require('./middlewares/errorHandler');
 const recruiterRoutes = require('./routes/recruiterRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
     res.send('Hello, world!');
 });
 
+app.use('/api/user', userRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 
 app.use(errorHandler);
