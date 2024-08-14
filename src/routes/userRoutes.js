@@ -15,12 +15,14 @@ userRoutes.post('/register', registerValidator, validationErrorHandler, userCont
 
 // userRoutes.put('/update-resume-data', userController.updateResumeData);
 
-// userRoutes.get('/templates', userController.getTemplates);
+userRoutes.get('/templates', userController.getTemplates);
 
-// userRoutes.get('/template/:id', userController.getTemplate);
+userRoutes.get('/template/:id', userController.getTemplate);
 
-// userRoutes.get('/jobs', userController.getJobs);
+userRoutes.get('/jobs', userController.getJobs);
 
-// userRoutes.get('/applied-jobs', userController.getAppliedJobs);
+userRoutes.post('/apply-job/:id', userController.applyJob);
+
+userRoutes.get('/applied-jobs', userController.getAppliedJobs);
 
 module.exports = userRoutes;
