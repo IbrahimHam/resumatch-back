@@ -146,7 +146,7 @@ exports.getAppliedJobs = async (req, res, next) => {
 };
 
 // Should be tested
-exports.jobs = async (req, res, next) => {
+exports.getJobs = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).populate('resume');
     if (!user || !user.resume) {

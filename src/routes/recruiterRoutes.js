@@ -5,6 +5,7 @@ const { loginValidator, registerValidator } = require('../middlewares/validators
 const validationErrorHandler = require('../middlewares/validationErrorHandler');
 const authMiddleware = require('../middlewares/authMiddleware');
 
+
 router.post('/register', registerValidator, validationErrorHandler, recruiterController.registerRecruiter);
 
 router.post('/login', loginValidator, validationErrorHandler, recruiterController.loginRecruiter);
