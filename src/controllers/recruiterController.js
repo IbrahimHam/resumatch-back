@@ -106,55 +106,7 @@ exports.createCompany = async (req, res, next) => {
   }
 };
 
-// // Post a new job
-// exports.createJob = async (req, res, next) => {
-//   const { title, description, requirements, jobType, location, tags } = req.body;
-//   const recruiterId = req.user._id
-
-//   try {
-//     const recruiter = await Recruiter.findById(recruiterId);
-//     if (!recruiter || !recruiter.companyId) {
-//       return next(new ValidationError('Recruiter does not have a company'));
-//     }
-
-//     // Create new job
-//     const job = new Job({
-//       title,
-//       description,
-//       requirements,
-//       jobType,
-//       location,
-//       tags,
-//       companyId: recruiter.companyId,
-//     });
-
-//     await job.save();
-
-//     // update recruiter's posted jobs
-//     await Recruiter.findByIdAndUpdate(recruiterId, { $push: { postedJobs: job._id } });
-
-//     res.status(201).json(job);
-//   } catch (error) {
-//     next(new DatabaseError());
-//   }
-// };
-
-// Get posted jobs
-// exports.getPostedJobs = async (req, res, next) => {
-//   const recruiterId = req.user._id
-
-//   try {
-//     const recruiter = await Recruiter.findById(recruiterId).populate('postedJobs');
-//     if (!recruiter) {
-//       return next(new NotFoundError('Recruiter'));
-//     }
-
-//     res.status(200).json(recruiter.postedJobs);
-//   } catch (error) {
-//     next(new DatabaseError());
-//   }
-// };
-
+// Get a recruiter by ID
 exports.getRecruiter = async (req, res, next) => {
   try {
     const recruiterId = req.user._id

@@ -17,6 +17,9 @@ router.delete('/:id', authMiddleware, jobController.deleteJob);
 // Get all jobs
 router.get('/', jobController.getJobs);
 
+// Get posted jobs for the authenticated recruiter
+router.get('/posted-jobs', authMiddleware, jobController.getPostedJobs);
+
 // Get a job by ID
 router.get('/:id', jobController.getJob);
 
