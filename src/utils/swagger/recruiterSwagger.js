@@ -91,63 +91,6 @@
  *       500:
  *         description: Internal server error
  * 
- * /recruiter/create-company:
- *   post:
- *     summary: Creates a new company
- *     tags: [Recruiter]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - description
- *               - image
- *               - location
- *               - website
- *               - employeesNumber
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               image:
- *                 type: string
- *               location:
- *                 type: string
- *               website:
- *                 type: string
- *               employeesNumber:
- *                 type: string
- *     responses:
- *       201:
- *         description: Successfully created company
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 description:
- *                   type: string
- *                 image:
- *                   type: string
- *                 location:
- *                   type: string
- *                 website:
- *                   type: string
- *                 employeesNumber:
- *                   type: string
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal server error
- * 
  * /recruiter/{id}:
  *   get:
  *     summary: Gets a specific recruiter by ID
