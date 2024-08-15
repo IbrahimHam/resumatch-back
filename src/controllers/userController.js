@@ -209,7 +209,6 @@ exports.getTemplate = async (req, res, next) => {
   }
 };
 
-// Should be tested
 exports.applyJob = async (req, res, next) => {
   const { id } = req.params;
 
@@ -222,6 +221,10 @@ exports.applyJob = async (req, res, next) => {
     const job = await Job.findById(id);
     if (!job) {
       return next(new NotFoundError('Job not found'));
+    }
+
+    if (user.appliedJobs.includes(job._id)) {
+      return next(new ValidationError('You have already applied to this job'));
     }
 
     user.appliedJobs.push(job);
@@ -238,7 +241,6 @@ exports.applyJob = async (req, res, next) => {
   }
 }
 
-// Should be tested
 exports.getAppliedJobs = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id)
@@ -258,7 +260,6 @@ exports.getAppliedJobs = async (req, res, next) => {
   }
 };
 
-// Should be tested
 exports.getJobs = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).populate('resume');
