@@ -8,6 +8,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const recruiterRoutes = require('./routes/recruiterRoutes');
 const userRoutes = require('./routes/userRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const companyRoutes = require('./routes/companyRoutes');
 const path = require('path');
 
 const options = {
@@ -61,6 +62,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 app.use('/api/job', jobRoutes);
+app.use('/api/company', require('./routes/companyRoutes'));
 
 app.use(errorHandler);
 

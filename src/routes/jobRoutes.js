@@ -3,8 +3,6 @@ const router = express.Router();
 const jobController = require('../controllers/jobController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-const jobRoutes = express.Router();
-
 // Create a job
 router.post('/', authMiddleware, jobController.createJob);
 

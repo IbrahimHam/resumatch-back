@@ -1,12 +1,18 @@
 const express = require('express');
+const router = express.Router();
 const companyController = require('../controllers/companyController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-const companyRoutes = express.Router();
+// Create a new company
+router.post('/', authMiddleware, companyController.createCompany);
 
-companyRoutes.get('/', companyController.getCompanies);
+// Get all companies
+router.get('/', companyController.getCompanies);
 
-companyRoutes.get('/:id', companyController.getCompany);
+// Get a company by ID
+router.get('/:id', companyController.getCompany);
 
-companyRoutes.get('/:id/jobs', companyController.getCompanyJobs);
+// Get all jobs posted by a company
+router.get('/:id/jobs', companyController.getCompanyJobs);
 
-module.exports = companyRoutes;
+module.exports = router;
