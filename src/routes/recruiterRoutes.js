@@ -10,8 +10,6 @@ router.post('/register', registerValidator, validationErrorHandler, recruiterCon
 
 router.post('/login', loginValidator, validationErrorHandler, recruiterController.loginRecruiter);
 
-router.post('/create-company', authMiddleware, recruiterController.createCompany);
-
 router.get('/:id', authMiddleware, recruiterController.getRecruiter);
 
 module.exports = router;

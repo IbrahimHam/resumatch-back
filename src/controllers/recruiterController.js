@@ -80,32 +80,6 @@ exports.loginRecruiter = async (req, res, next) => {
   }
 };
 
-// Create a new company
-exports.createCompany = async (req, res, next) => {
-  const { name, description, image, location, website, employeesNumber } = req.body;
-  const recruiterId = req.user._id
-
-  try {
-    const company = new Company({
-      name,
-      description,
-      image,
-      location,
-      website,
-      employeesNumber,
-    });
-
-    await company.save();
-
-    // update recruiter
-    await Recruiter.findByIdAndUpdate(recruiterId, { companyId: company._id });
-
-    res.status(201).json(company);
-  } catch (error) {
-    next(new DatabaseError());
-  }
-};
-
 // Get a recruiter by ID
 exports.getRecruiter = async (req, res, next) => {
   try {

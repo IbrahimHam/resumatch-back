@@ -8,28 +8,21 @@ const errorHandler = require('./middlewares/errorHandler');
 const recruiterRoutes = require('./routes/recruiterRoutes');
 const userRoutes = require('./routes/userRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const companyRoutes = require('./routes/companyRoutes');
 const path = require('path');
 
 const options = {
     definition: {
         openapi: "3.1.0",
         info: {
-            title: "Title",
+            title: "ResumeMatch API",
             version: version,
-            description: "Test description",
-            license: {
-                name: "Test",
-                url: "",
-            },
-            contact: {
-                name: "Name",
-                url: "",
-                email: "",
-            },
+            description: "API documentation for ResumeMatch application.",
         },
         servers: [
             {
                 url: "http://localhost:8080",
+                description: "Local development server"
             },
         ],
     },
@@ -37,6 +30,7 @@ const options = {
         // path.resolve(__dirname, 'userSwagger.js'),
         path.resolve(__dirname, './utils/swagger/recruiterSwagger.js'),
         path.resolve(__dirname, './utils/swagger/jobSwagger.js'),
+        path.resolve(__dirname, './utils/swagger/companySwagger.js'),
         // path.resolve(__dirname, 'companySwagger.js'),
     ],
 };
@@ -61,6 +55,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 app.use('/api/job', jobRoutes);
+app.use('/api/company', require('./routes/companyRoutes'));
 
 app.use(errorHandler);
 
