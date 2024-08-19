@@ -1,5 +1,6 @@
 const Job = require('../models/Job');
 const Recruiter = require('../models/Recruiter');
+const User = require('../models/User');
 const ValidationError = require('../errors/ValidationError');
 const DatabaseError = require('../errors/DatabaseError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -82,7 +83,7 @@ exports.deleteJob = async (req, res, next) => {
     }
 
     await Job.findByIdAndDelete(id);
-    
+
     // remove job from recruiter's posted jobs
     await Recruiter.findByIdAndUpdate(recruiterId, { $pull: { postedJobs: id } });
 
@@ -132,7 +133,6 @@ exports.getJob = async (req, res, next) => {
 // Get all posted jobs for a specific recruiter
 exports.getPostedJobs = async (req, res, next) => {
   const recruiterId = req.user._id;
-  console.log(recruiterId);
 
   try {
     const recruiter = await Recruiter.findById(recruiterId).populate('postedJobs');
@@ -145,3 +145,61 @@ exports.getPostedJobs = async (req, res, next) => {
     next(new DatabaseError());
   }
 };
+
+// Apply to a job
+exports.applyJob = async (req, res, next) => {
+  const { id } = req.params;  // job ID
+  const userId = req.user._id;  // assumed user ID from auth middleware
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    // Check if the job exists
+    const job = await Job.findById(id);
+    if (!job) {
+      return next(new NotFoundError('Job not found'));
+    }
+
+    // Check if the user has already applied to the job
+    if (user.appliedJobs.includes(job._id)) {
+      return next(new ValidationError('You have already applied to this job'));
+    }
+
+    // Apply to the job
+    user.appliedJobs.push(job._id);
+    await user.save();
+    
+    res.status(200).json({
+      status: 'success',
+      message: "Applied to job successfully"
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+
+// Get all jobs a user has applied to
+exports.getAppliedJobs = async (req, res, next) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate('appliedJobs');
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        appliedJobs: user.appliedJobs
+      }
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+

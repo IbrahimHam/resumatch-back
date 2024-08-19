@@ -322,3 +322,5 @@ exports.getJobs = async (req, res, next) => {
     next(new DatabaseError());
   }
 };
+
+exports.uploadResume = async (req, res, next) => {};
