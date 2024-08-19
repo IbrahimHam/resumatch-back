@@ -140,7 +140,7 @@
  *         description: Internal server error
  *
  * @swagger
- * /create-resume-data:
+ * /user/create-resume-data:
  *   post:
  *     summary: Create or update resume data for the logged-in user
  *     tags: [Resume]
@@ -202,7 +202,7 @@
  *         description: Internal server error
  *
  * @swagger
- * /resume-data:
+ * /user/resume-data:
  *   get:
  *     summary: Get resume data of the logged-in user
  *     tags: [Resume]
@@ -244,78 +244,346 @@
  *         description: Internal server error
  *
  * @swagger
- * /apply-job/{id}:
- *   post:
- *     summary: Apply to a job by ID
- *     tags: [Job]
+ * /user/update-resume-data:
+ *   put:
+ *     summary: Update the user's resume data
+ *     tags: [Resume]
  *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *           example: "60d5f5f4d7c4e9b52d20a89a"
+ *       - bearerAuth: []  # Use JWT for authorization
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               contactInfo:
+ *                 type: object
+ *                 properties:
+ *                   phone:
+ *                     type: string
+ *                     example: "+1234567890"
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                     example: "user@example.com"
+ *                   address:
+ *                     type: string
+ *                     example: "123 Main St, City, Country"
+ *               user:
+ *                 type: string
+ *                 example: "John Doe"
+ *               summary:
+ *                 type: string
+ *                 example: "A highly motivated software engineer with 5+ years of experience..."
+ *               skills:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "JavaScript"
+ *               experience:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     jobTitle:
+ *                       type: string
+ *                       example: "Software Engineer"
+ *                     company:
+ *                       type: string
+ *                       example: "Tech Company"
+ *                     startDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2019-01-01"
+ *                     endDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2021-12-31"
+ *                     description:
+ *                       type: string
+ *                       example: "Developed and maintained web applications..."
+ *               education:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     institution:
+ *                       type: string
+ *                       example: "University of Technology"
+ *                     degree:
+ *                       type: string
+ *                       example: "Bachelor of Science in Computer Science"
+ *                     startDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2015-09-01"
+ *                     endDate:
+ *                       type: string
+ *                       format: date
+ *                       example: "2019-06-30"
+ *               languages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "English"
+ *               references:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "Available upon request"
+ *               certificates:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     institution:
+ *                       type: string
+ *                       example: "Certification Authority"
+ *                     title:
+ *                       type: string
+ *                       example: "Certified Software Developer"
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2020-06-01"
  *     responses:
  *       200:
- *         description: Successfully applied to the job
+ *         description: Successfully updated the resume data
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     resume:
+ *                       type: object
+ *                       properties:
+ *                         contactInfo:
+ *                           type: object
+ *                           properties:
+ *                             phone:
+ *                               type: string
+ *                               example: "+1234567890"
+ *                             email:
+ *                               type: string
+ *                               example: "user@example.com"
+ *                             address:
+ *                               type: string
+ *                               example: "123 Main St, City, Country"
+ *                         user:
+ *                           type: string
+ *                           example: "John Doe"
+ *                         summary:
+ *                           type: string
+ *                           example: "A highly motivated software engineer with 5+ years of experience..."
+ *                         skills:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "JavaScript"
+ *                         experience:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               jobTitle:
+ *                                 type: string
+ *                                 example: "Software Engineer"
+ *                               company:
+ *                                 type: string
+ *                                 example: "Tech Company"
+ *                               startDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2019-01-01"
+ *                               endDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2021-12-31"
+ *                               description:
+ *                                 type: string
+ *                                 example: "Developed and maintained web applications..."
+ *                         education:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               institution:
+ *                                 type: string
+ *                                 example: "University of Technology"
+ *                               degree:
+ *                                 type: string
+ *                                 example: "Bachelor of Science in Computer Science"
+ *                               startDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2015-09-01"
+ *                               endDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2019-06-30"
+ *                         languages:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "English"
+ *                         references:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "Available upon request"
+ *                         certificates:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               institution:
+ *                                 type: string
+ *                                 example: "Certification Authority"
+ *                               title:
+ *                                 type: string
+ *                                 example: "Certified Software Developer"
+ *                               date:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2020-06-01"
+ *       404:
+ *         description: User or resume data not found
+ *       500:
+ *         description: Internal server error
+ * 
+ * @swagger
+ * /user/upload-resume:
+ *   post:
+ *     summary: Upload and process a resume PDF file
+ *     tags: [Resume]
+ *     security:
+ *       - bearerAuth: []  # Use JWT for authorization
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The PDF file of the resume to be uploaded
+ *     responses:
+ *       200:
+ *         description: Successfully processed the resume and returned formatted data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
  *                   type: string
  *                   example: "success"
  *                 data:
  *                   type: object
  *                   properties:
- *                     message:
- *                       type: string
- *                       example: "Applied to job successfully"
- *       404:
- *         description: Job not found
+ *                     resume:
+ *                       type: object
+ *                       properties:
+ *                         contactInfo:
+ *                           type: object
+ *                           properties:
+ *                             phone:
+ *                               type: string
+ *                               example: "+1234567890"
+ *                             email:
+ *                               type: string
+ *                               example: "user@example.com"
+ *                             address:
+ *                               type: string
+ *                               example: "123 Main St, City, Country"
+ *                         user:
+ *                           type: string
+ *                           example: "John Doe"
+ *                         summary:
+ *                           type: string
+ *                           example: "A highly motivated software engineer with 5+ years of experience..."
+ *                         skills:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "JavaScript"
+ *                         experience:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               jobTitle:
+ *                                 type: string
+ *                                 example: "Software Engineer"
+ *                               company:
+ *                                 type: string
+ *                                 example: "Tech Company"
+ *                               startDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2019-01-01"
+ *                               endDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2021-12-31"
+ *                               description:
+ *                                 type: string
+ *                                 example: "Developed and maintained web applications..."
+ *                         education:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               institution:
+ *                                 type: string
+ *                                 example: "University of Technology"
+ *                               degree:
+ *                                 type: string
+ *                                 example: "Bachelor of Science in Computer Science"
+ *                               startDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2015-09-01"
+ *                               endDate:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2019-06-30"
+ *                         languages:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "English"
+ *                         references:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                             example: "Available upon request"
+ *                         certificates:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               institution:
+ *                                 type: string
+ *                                 example: "Certification Authority"
+ *                               title:
+ *                                 type: string
+ *                                 example: "Certified Software Developer"
+ *                               date:
+ *                                 type: string
+ *                                 format: date
+ *                                 example: "2020-06-01"
+ *       400:
+ *         description: Resume processing failed
  *       500:
- *         description: Internal server error
- *
- * @swagger
- * /applied-jobs:
- *   get:
- *     summary: Get all jobs the user has applied to
- *     tags: [Job]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successfully fetched applied jobs
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "success"
- *                 appliedJobs:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "60d5f5f4d7c4e9b52d20a89a"
- *                       title:
- *                         type: string
- *                         example: "Software Engineer"
- *                       location:
- *                         type: string
- *                         example: "San Francisco, CA"
- *                       description:
- *                         type: string
- *                         example: "A software engineering position focusing on backend development."
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
+ *         description: Failed to process resume
  */
