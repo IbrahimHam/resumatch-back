@@ -21,6 +21,9 @@ router.get('/posted-jobs', authMiddleware, jobController.getPostedJobs);
 // Get applied jobs for the authenticated user
 router.get('/applied', authMiddleware, jobController.getAppliedJobs);
 
+// Get jobs that match a user's resume
+router.get('/matched-jobs', authMiddleware, jobController.getMatchedJobs);
+
 // Get a job by ID
 router.get('/:id', jobController.getJob);
 

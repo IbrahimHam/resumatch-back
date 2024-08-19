@@ -203,3 +203,69 @@ exports.getAppliedJobs = async (req, res, next) => {
   }
 };
 
+// Get jobs that match a user's resume
+exports.getMatchedJobs = async (req, res, next) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate('resume');
+    if (!user || !user.resume) {
+      return next(new NotFoundError('User or resume data found'));
+    }
+
+    const skills = user.resume.skills;
+    const jobTitles = user.resume.experience.map(exp => exp.jobTitle);
+   
+    const { location, jobType, industry } = user.preferences;
+
+    const jobQuery = {
+      $or: [
+        { title: { $in: jobTitles } },
+        { 'requirements.skill': { $in: skills } },
+        { description: { $regex: skills.join('|'), $options: 'i' } }
+      ]
+    };
+
+    if (location) jobQuery.location = location;
+    if (jobType) jobQuery.jobType = jobType;
+    if (industry) jobQuery.tags = industry;
+
+    // Score jobs based on user preferences
+    const jobs = await Job.find(jobQuery);
+    const scoredJobs = jobs.map(job => {
+      let score = 0;
+      // Job title matches
+      if (jobTitles.some(title => job.title.toLowerCase().includes(title.toLowerCase()))) {
+        score += 3;
+      }
+      // Skill matches
+      job.requirements.forEach(req => {
+        if (skills.includes(req.skill)) {
+          score += 1;
+        }
+      });
+      // Location, job type and industry matches
+      if (job.location === location) score += 1;
+      if (job.jobType === jobType) score += 1;
+      if (job.tags.includes(industry)) score += 1;
+
+      return { job, score };
+    });
+
+    // Sort jobs by score
+    scoredJobs.sort((a, b) => b.score - a.score);
+
+    // Return only jobs
+    const matchedJobs = scoredJobs.map(({ job }) => job);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        matchedJobs
+      }
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+

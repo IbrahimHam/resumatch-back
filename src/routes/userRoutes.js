@@ -24,10 +24,4 @@ userRoutes.get('/templates', authMiddleware, userController.getTemplates);
 
 userRoutes.get('/template/:id', authMiddleware, userController.getTemplate);
 
-userRoutes.get('/jobs', authMiddleware, userController.getJobs);
-
-userRoutes.post('/apply-job/:id', authMiddleware, userController.applyJob);
-
-userRoutes.get('/applied-jobs', authMiddleware, userController.getAppliedJobs);
-
 module.exports = userRoutes;
