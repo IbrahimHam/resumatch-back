@@ -18,7 +18,16 @@ router.get('/', jobController.getJobs);
 // Get posted jobs for the authenticated recruiter
 router.get('/posted-jobs', authMiddleware, jobController.getPostedJobs);
 
+// Get applied jobs for the authenticated user
+router.get('/applied', authMiddleware, jobController.getAppliedJobs);
+
+// Get jobs that match a user's resume
+router.get('/matched-jobs', authMiddleware, jobController.getMatchedJobs);
+
 // Get a job by ID
 router.get('/:id', jobController.getJob);
+
+// Apply for a job
+router.post('/:id/apply', authMiddleware, jobController.applyJob);
 
 module.exports = router;
