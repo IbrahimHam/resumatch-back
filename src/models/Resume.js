@@ -19,22 +19,22 @@ const resumeSchema = new Schema({
     experience: [{
         jobTitle: { type: String },
         company: { type: String },
-        startDate: { type: Date },
-        endDate: { type: Date },
+        startDate: { type: String },
+        endDate: { type: String },
         description: { type: String }
     }],
     education: [{
         institution: { type: String },
         degree: { type: String },
-        startDate: { type: Date },
-        endDate: { type: Date }
+        startDate: { type: String },
+        endDate: { type: String }
     }],
     languages: [{ type: String }],
     references: [{ type: String }],
     certificates: [{
         institution: { type: String },
         title: { type: String },
-        date: { type: Date }
+        date: { type: String }
     }]
 }, { timestamps: true });
 
