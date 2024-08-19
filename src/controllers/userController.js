@@ -6,6 +6,7 @@ const ValidationError = require('../errors/ValidationError');
 const DatabaseError = require('../errors/DatabaseError');
 const NotFoundError = require('../errors/NotFoundError');
 const { hashPassword, comparePassword } = require('../utils/password');
+const axios = require('axios');
 
 // Register a new user
 exports.register = async (req, res, next) => {
@@ -209,31 +210,6 @@ exports.getTemplate = async (req, res, next) => {
   }
 };
 
-exports.uploadResume = async (req, res, next) => {
-  upload.single('file')(req, res, async (error) => {
-    if (error) {
-      return res.status(500).send(error.message);
-    }
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
-
-    try {
-      const filePath = req.file.path;
-      const fileData = fs.readFileSync(filePath);
-      const text = await pdfParse(fileData);
-
-      const lines = text.text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-      fs.unlinkSync(filePath);  // Remove the file after processing
-
-      res.json({ lines });
-    } catch (err) {
-      console.error('Error processing PDF:', err);
-      res.status(500).send('Error processing PDF');
-    }
-  });
-};
-
 exports.processResume = async (req, res) => {
   if (!req.resumeText) {
     return res.status(400).send('Resume processing failed.');
@@ -242,7 +218,14 @@ exports.processResume = async (req, res) => {
   try {
     const prompt = formatPrompt(req.resumeText);
     const result = await sendToOpenAI(prompt);
-    res.json(result);
+
+    const jsonString = result.message.content;
+
+    const cleanJsonString = jsonString.replace(/```json|```/g, '').trim();
+    const parsedJson = JSON.parse(cleanJsonString);
+
+    res.json(parsedJson);
+
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Failed to process resume');
@@ -255,7 +238,7 @@ function formatPrompt(resumeText) {
 
   ${resumeText.join('\n')}
 
-  Please format the data into the following JSON structure:
+  Please format the data into the following JSON structure, and return only the JSON data without any additional text:
 
   {
       "status": "success",
@@ -307,34 +290,44 @@ function formatPrompt(resumeText) {
       }
   }
 
-  Please format the data accordingly and ensure that all fields are filled accurately based on the provided input.`;
+  Please format the data accordingly and ensure that all fields are filled accurately based on the provided input.
+  Return only the JSON structure above with the data filled in, without any additional comments, explanations, or text.`;
 }
 
 async function sendToOpenAI(prompt) {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
+  try {
+    const response = await axios.post('https://gen-ai-wbs-consumer-api.onrender.com/api/v1/chat/completions',
+      {
+        "stream": false,
+        "model": "gpt-4o",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are quite dramatic"
+          },
+          {
+            "role": "user",
+            "content": prompt
+          }
+        ]
       },
-      body: JSON.stringify({
-          "model": "gpt-4",
-          "messages": [
-              {
-                  "role": "system",
-                  "content": "You are a helpful assistant."
-              },
-              {
-                  "role": "user",
-                  "content": prompt
-              }
-          ]
-      })
-  });
+      {
+        headers: {
+          'provider': 'open-ai',
+          'mode': 'production',
+          'Authorization': `${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
-  const result = await response.json();
-  if (!response.ok) {
-      throw new Error(result.error.message || 'Error processing data through OpenAI');
+    if (response.status !== 200) {
+      throw new Error(response.data.error.message || 'Error processing data through OpenAI');
+    }
+
+    return response.data;
+
+  } catch (error) {
+    console.error('Error:', error.message || error);
+    throw new Error(error.message || 'An unexpected error occurred while communicating with OpenAI');
   }
-  return result;
 }
