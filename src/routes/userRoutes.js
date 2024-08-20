@@ -14,7 +14,7 @@ userRoutes.post('/register', registerValidator, validationErrorHandler, userCont
 
 userRoutes.get('/me', authMiddleware, userController.getUser);
 
-userRoutes.post('/upload-resume', upload, pdfProcessor, userController.processResume);
+userRoutes.post('/upload-resume', authMiddleware, upload, pdfProcessor, userController.processResume);
 
 userRoutes.post('/create-resume-data', authMiddleware, userController.createResumeData);
 
