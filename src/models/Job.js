@@ -14,6 +14,7 @@ const jobSchema = new Schema({
         skill: { type: String },
         level: { type: String }
     }],
+    detailedRequirements: { type: String },
     companyId: {
         type: Schema.Types.ObjectId,
         ref: 'Company',
