@@ -112,7 +112,7 @@ exports.createResumeData = async (req, res, next) => {
     if (!user.resume) {
       const resumeData = {
         user: user._id,
-        ...req.body
+        ...req.body.data
       };
 
       resume = new Resume(resumeData);
@@ -167,7 +167,7 @@ exports.updateResumeData = async (req, res, next) => {
     }
 
     const resume = user.resume;
-    Object.assign(resume, req.body);
+    Object.assign(resume, req.body.data);
     await resume.save();
 
     res.status(200).json({
@@ -222,9 +222,35 @@ exports.processResume = async (req, res) => {
     const jsonString = result.message.content;
 
     const cleanJsonString = jsonString.replace(/```json|```/g, '').trim();
-    const parsedJson = JSON.parse(cleanJsonString);
+    const parsedJson = await JSON.parse(cleanJsonString);
 
-    res.json(parsedJson);
+    
+    const user = await User.findById(req.user._id).populate('resume');
+
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    let resume;
+
+    if (!user.resume) {
+      const resumeData = {
+        user: user._id,
+        ...parsedJson.data.resume[0]
+      };
+
+      resume = new Resume(resumeData);
+      await resume.save();
+
+      user.resume = resume._id;
+      await user.save();
+    } else {
+      resume = user.resume;
+      Object.assign(resume, parsedJson.data.resume[0]);
+      await resume.save();
+    }
+
+    res.status(200).json(parsedJson);
 
   } catch (error) {
     console.error('Error:', error);
@@ -238,7 +264,7 @@ function formatPrompt(resumeText) {
 
   ${resumeText.join('\n')}
 
-  Please format the data into the following JSON structure, and return only the JSON data without any additional text:
+  Please format the data into the following JSON structure, format all dates like 2024-12-01 (YYYY-MM-DD), if the data is like September 2024 return it as 2024-09-01 and return only the JSON data without any additional text:
 
   {
       "status": "success",
@@ -250,11 +276,12 @@ function formatPrompt(resumeText) {
                       "email": "",
                       "address": ""
                   },
-                  "user": "",
+                  "name": "",
                   "summary": "",
                   "skills": [
                       ""
                   ],
+                  birthDate: "",
                   "experience": [
                       {
                           "jobTitle": "",

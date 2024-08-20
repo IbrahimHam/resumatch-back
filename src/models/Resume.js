@@ -7,6 +7,9 @@ const resumeSchema = new Schema({
         ref: 'User',
         required: true
     },
+    name: {
+        type: String,
+    },
     summary: {
         type: String
     },
@@ -15,6 +18,7 @@ const resumeSchema = new Schema({
         email: { type: String },
         address: { type: String }
     },       
+    birthDate: { type: String },
     skills: [{ type: String }],
     experience: [{
         jobTitle: { type: String },
