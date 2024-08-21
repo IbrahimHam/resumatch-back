@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const companyController = require('../controllers/companyController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const imageUpload = require('../middlewares/imageUpload');
 
 // Create a new company
-router.post('/', authMiddleware, companyController.createCompany);
+router.post('/', authMiddleware, imageUpload, companyController.createCompany);
 
 // Get all companies
 router.get('/', companyController.getCompanies);

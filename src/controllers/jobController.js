@@ -140,7 +140,14 @@ exports.getPostedJobs = async (req, res, next) => {
       return next(new NotFoundError('Recruiter not found'));
     }
 
-    res.status(200).json(recruiter.postedJobs);
+    const postedJobs = recruiter.postedJobs;
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        postedJobs
+      }
+    });
   } catch (error) {
     next(new DatabaseError());
   }
