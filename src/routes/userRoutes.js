@@ -22,8 +22,14 @@ userRoutes.get('/resume-data', authMiddleware, userController.getResumeData);
 
 userRoutes.put('/update-resume-data', authMiddleware, userController.updateResumeData);
 
+userRoutes.post('/create-template', authMiddleware, userController.createTemplate);
+
 userRoutes.get('/templates', authMiddleware, userController.getTemplates);
 
 userRoutes.get('/template/:id', authMiddleware, userController.getTemplate);
+
+userRoutes.put('/update-template/:id', authMiddleware, userController.updateTemplate);
+
+userRoutes.delete('/delete-template/:id', authMiddleware, userController.deleteTemplate);
 
 module.exports = userRoutes;

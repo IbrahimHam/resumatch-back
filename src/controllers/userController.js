@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Job = require('../models/Job');
+const Template = require('../models/Template');
 const Resume = require('../models/Resume');
 const { generateToken } = require('../utils/auth');
 const ValidationError = require('../errors/ValidationError');
@@ -188,7 +189,19 @@ exports.getTemplates = async (req, res, next) => {
     if (!user) {
       return next(new NotFoundError('User not found'));
     }
-    res.status(200).json(user.templates);
+
+    const templates = await Template.find({ user: user._id });
+
+    if (!templates) {
+      return next(new NotFoundError('Templates not found'));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        templates
+      }
+  });
   } catch (error) {
     next(new DatabaseError());
   }
@@ -209,6 +222,75 @@ exports.getTemplate = async (req, res, next) => {
     next(new DatabaseError());
   }
 };
+
+exports.createTemplate = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    const template = new Template({
+      user: user._id,
+      resumeData: user.resume,
+      templateLink: req.body.templateLink
+    });
+
+    await template.save();
+  
+    res.status(200).json(template._id);
+  } catch (error) {
+    next(new DatabaseError());
+  }
+}
+
+exports.updateTemplate = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    const template = await Template.findById(id);
+    if (!template) {
+      return next(new NotFoundError('Template not found'));
+    }
+
+    template.templateLink = req.body.templateLink;
+    await template.save();
+
+    res.status(200).json(template);
+  } catch (error) {
+    next(new DatabaseError());
+  }
+}
+
+exports.deleteTemplate = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+
+    const template = await Template.findById(id);
+    if (!template) {
+      return next(new NotFoundError('Template not found'));
+    }
+
+    await Template.deleteOne({ _id: id });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Template deleted successfully'
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+}
 
 exports.processResume = async (req, res) => {
   if (!req.resumeText) {
