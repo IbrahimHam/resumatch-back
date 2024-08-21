@@ -73,6 +73,7 @@ exports.loginRecruiter = async (req, res, next) => {
         id: recruiter._id,
         email: recruiter.email,
         fullName: recruiter.fullName,
+        company_id: recruiter.companyId,
       },
     });
   } catch (error) {
