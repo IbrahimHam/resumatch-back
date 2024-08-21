@@ -41,6 +41,7 @@ app.use(cors());
 app.use(express.json());
 
 const specs = swaggerJsdoc(options);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(
     "/api-docs",
     swaggerUi.serve,
