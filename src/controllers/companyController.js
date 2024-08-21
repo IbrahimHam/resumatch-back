@@ -20,6 +20,15 @@ exports.createCompany = async (req, res, next) => {
       return next(new AuthorizationError('You must be a recruiter to create a company.'));
     }
 
+    const existingCompany = await Company.findOne({ name });
+    if (existingCompany) {
+      return res.status(409).json({
+        status: 'fail',
+        message: 'Company with this name already exists. Please connect to the existing company.',
+        data: existingCompany
+      });
+    }
+
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     const company = new Company({
@@ -41,6 +50,9 @@ exports.createCompany = async (req, res, next) => {
     });
 
   } catch (error) {
+    if (error.code === 11000) {
+      return next(new ValidationError('Company with this name already exists.'));
+    }
     next(new DatabaseError());
   }
 };
@@ -92,13 +104,68 @@ exports.getCompanyJobs = async (req, res, next) => {
     if (!company) {
       return next(new NotFoundError('Company not found'));
     }
- 
+
     const jobs = await Job.find({ id }).populate('companyId', 'name location');
 
     res.status(200).json({
       status: 'success',
       data: {
         jobs
+      }
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+
+// Search companies by name
+exports.searchCompanies = async (req, res, next) => {
+  const { query } = req.query;
+
+  try {
+    const companies = await Company.find({
+      name: { $regex: query, $options: 'i' }
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        companies
+      }
+    });
+  } catch (error) {
+    next(new DatabaseError());
+  }
+};
+
+// Recruiter joins an existing company
+exports.joinCompany = async (req, res, next) => {
+  const { companyId } = req.body;
+  const recruiterId = req.user._id;
+
+  if (!companyId) {
+    return next(new ValidationError('Company ID is required.'));
+  }
+
+  try {
+    const recruiter = await Recruiter.findById(recruiterId);
+    if (!recruiter) {
+      return next(new AuthorizationError('You must be a recruiter to join a company.'));
+    }
+
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return next(new ValidationError('Company not found.'));
+    }
+
+    recruiter.companyId = companyId;
+    await recruiter.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Joined company successfully',
+      data: {
+        recruiter
       }
     });
   } catch (error) {
