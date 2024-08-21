@@ -8,7 +8,7 @@ const AuthorizationError = require('../errors/AuthorizationError');
 
 // Create a new job
 exports.createJob = async (req, res, next) => {
-  const { title, description, requirements, jobType, location, tags } = req.body;
+  const { title, description, requirements, jobType, location, tags, detailedRequirements } = req.body;
   const recruiterId = req.user._id;
 
   try {
@@ -24,6 +24,7 @@ exports.createJob = async (req, res, next) => {
       jobType,
       location,
       tags,
+      detailedRequirements,
       companyId: recruiter.companyId,
     });
 
