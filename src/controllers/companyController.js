@@ -7,7 +7,7 @@ const AuthorizationError = require('../errors/AuthorizationError');
 
 // Create a new company
 exports.createCompany = async (req, res, next) => {
-  const { name, description, image, location, website, employeesNumber } = req.body;
+  const { name, description, location, website, employeesNumber } = req.body;
   const recruiterId = req.user._id;
 
   if (!name || !description || !location || !employeesNumber) {
@@ -20,6 +20,8 @@ exports.createCompany = async (req, res, next) => {
       return next(new AuthorizationError('You must be a recruiter to create a company.'));
     }
 
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
     const company = new Company({
       name,
       description,
@@ -28,6 +30,7 @@ exports.createCompany = async (req, res, next) => {
       website,
       employeesNumber
     });
+
     await company.save();
 
     await Recruiter.findByIdAndUpdate(recruiterId, { companyId: company._id });
