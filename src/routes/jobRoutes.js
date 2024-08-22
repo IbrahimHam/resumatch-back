@@ -24,6 +24,9 @@ router.get('/applied', authMiddleware, jobController.getAppliedJobs);
 // Get jobs that match a user's resume
 router.get('/matched-jobs', authMiddleware, jobController.getMatchedJobs);
 
+// create a cover letter
+router.post('/:id/create-cover-letter', authMiddleware, jobController.createCoverLetter);
+
 // Get a job by ID
 router.get('/:id', jobController.getJob);
 

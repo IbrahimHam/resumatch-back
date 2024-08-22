@@ -5,6 +5,7 @@ const ValidationError = require('../errors/ValidationError');
 const DatabaseError = require('../errors/DatabaseError');
 const NotFoundError = require('../errors/NotFoundError');
 const AuthorizationError = require('../errors/AuthorizationError');
+const axios = require('axios');
 
 // Create a new job
 exports.createJob = async (req, res, next) => {
@@ -115,10 +116,7 @@ exports.getJob = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const job = await Job.findById(id).populate('companyId', 'name location');
-    if (!job) {
-      return next(new NotFoundError('Job'));
-    }
+    const job = await fetchJobById(id);
 
     res.status(200).json({
       status: 'success',
@@ -180,7 +178,7 @@ exports.applyJob = async (req, res, next) => {
     // Apply to the job
     user.appliedJobs.push(job._id);
     await user.save();
-    
+
     res.status(200).json({
       status: 'success',
       message: "Applied to job successfully"
@@ -223,7 +221,7 @@ exports.getMatchedJobs = async (req, res, next) => {
 
     const skills = user.resume.skills;
     const jobTitles = user.resume.experience.map(exp => exp.jobTitle);
-   
+
     const { location, jobType, industry } = user.preferences;
 
     const jobQuery = {
@@ -277,3 +275,81 @@ exports.getMatchedJobs = async (req, res, next) => {
   }
 };
 
+exports.createCoverLetter = async (req, res, next) => {
+  try {
+    const { id: jobId } = req.params;
+
+    const job = await fetchJobById(jobId);
+    const resume = await fetchUserResume(req.user._id);
+
+    const prompt = constructPrompt(job, resume);
+
+    const coverLetter = await generateCoverLetter(prompt);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        // resume,
+        coverLetter
+      }
+    });
+  } catch (error) {
+    console.log('Error:', error);
+    next(error);
+  }
+};
+
+const fetchJobById = async (id) => {
+  const job = await Job.findById(id).populate('companyId', 'name location');
+  if (!job) {
+    throw new NotFoundError('Job not found');
+  }
+  return job;
+};
+
+const fetchUserResume = async (userId) => {
+  const user = await User.findById(userId).populate('resume');
+  if (!user || !user.resume) {
+    throw new NotFoundError('User resume not found');
+  }
+  return user.resume;
+};
+
+const constructPrompt = (job, resume) => {
+  return `Create a cover letter for the job titled "${job.title}" at "${job.companyId.name}" based on the following resume:\n\n${JSON.stringify(resume, null, 2)}\n\nEnsure the cover letter is professional and tailored specifically for this job and return only the cover letter no need for explanation or anything.`;
+};
+
+const generateCoverLetter = async (prompt) => {
+  try {
+    const response = await axios.post('https://gen-ai-wbs-consumer-api.onrender.com/api/v1/chat/completions', {
+      stream: false,
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a professional assistant."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ]
+    }, {
+      headers: {
+        'provider': 'open-ai',
+        'mode': 'production',
+        'Authorization': `${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status !== 200) {
+      throw new Error(response.data.error.message || 'Error generating cover letter');
+    }
+
+    return response.data.message.content; 
+  } catch (error) {
+    console.error('Error generating cover letter:', error.message || error);
+    throw new DatabaseError('Failed to generate cover letter');
+  }
+};
