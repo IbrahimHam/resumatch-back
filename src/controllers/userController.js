@@ -426,7 +426,7 @@ exports.sendApplication = async (req, res, next) => {
   try {
     const { coverLetter, companyEmail, resumePdfPath } = req.body;
 
-    if (!coverLetter || !resumePdfPath) {
+    if (!coverLetter || !companyEmail || !resumePdfPath) {
       return res.status(400).json({ message: 'Cover letter and resume PDF are required.' });
     }
 
@@ -434,13 +434,13 @@ exports.sendApplication = async (req, res, next) => {
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_APP_PASSWORD, 
+        pass: process.env.EMAIL_APP_PASSWORD,
       },
     });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: "ihammoud6@gmail.com",
+      to: companyEmail,
       subject: `Job Application from ${req.user.fullName}`,
       text: coverLetter,
       attachments: [
