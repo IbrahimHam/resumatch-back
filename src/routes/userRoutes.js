@@ -3,7 +3,7 @@ const userController = require('../controllers/userController');
 const { loginValidator, registerValidator } = require('../middlewares/validators/authValidator');
 const validationErrorHandler = require('../middlewares/validationErrorHandler');
 const authMiddleware = require('../middlewares/authMiddleware');
-const upload = require('../utils/fileUpload').single('file');  // Configure multer to handle 'file' form data
+const upload = require('../utils/fileUpload').single('file');
 const pdfProcessor = require('../middlewares/pdfProcessor');
 
 const userRoutes = express.Router();
@@ -25,6 +25,12 @@ userRoutes.put('/update-resume-data', authMiddleware, userController.updateResum
 userRoutes.post('/create-template', authMiddleware, userController.createTemplate);
 
 userRoutes.get('/templates', authMiddleware, userController.getTemplates);
+
+userRoutes.get('/latest-resume-pdf-path', authMiddleware, userController.getLatestResumePdfPath);
+
+userRoutes.post('/save-template', authMiddleware, userController.saveTemplate);
+
+userRoutes.post('/send-application', authMiddleware, userController.sendApplication);
 
 userRoutes.get('/template/:id', authMiddleware, userController.getTemplate);
 
