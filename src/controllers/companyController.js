@@ -106,7 +106,7 @@ exports.getCompanyJobs = async (req, res, next) => {
       return next(new NotFoundError('Company not found'));
     }
 
-    const jobs = await Job.find({ id }).populate('companyId', 'name location');
+    const jobs = await Job.find({ "companyId": id }).populate('companyId', 'name location');
 
     res.status(200).json({
       status: 'success',
