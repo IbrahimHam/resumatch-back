@@ -1,9 +1,14 @@
 const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
 const path = require('path');
+const fs = require('fs');
 
 // Define the log directory
-const logDir = path.join(__dirname, '../logs');
+const logDir = '/tmp/logs';
+
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
 
 const dailyRotateFileTransport = new transports.DailyRotateFile({
     filename: `${logDir}/app-%DATE%.log`, // log file will be created in logs folder with name app-<date>.log
