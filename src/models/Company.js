@@ -25,6 +25,10 @@ const companySchema = new Schema({
         type: String,
         required: true
     },
+    companyEmail: {  // Added company email field
+        type: String,
+        required: true
+    },
     // postedJobs: [{ type: Schema.Types.ObjectId, ref: 'Job' }],
 }, { timestamps: true });
 

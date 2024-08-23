@@ -300,7 +300,7 @@ exports.createCoverLetter = async (req, res, next) => {
 };
 
 const fetchJobById = async (id) => {
-  const job = await Job.findById(id).populate('companyId', 'name location');
+  const job = await Job.findById(id).populate('companyId', 'name location companyEmail');
   if (!job) {
     throw new NotFoundError('Job not found');
   }
