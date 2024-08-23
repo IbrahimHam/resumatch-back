@@ -29,6 +29,7 @@
     "puppeteer": "^23.1.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tmp": "^0.2.3",
     "uuid": "^10.0.0",
     "winston": "^3.14.1",
     "winston-daily-rotate-file": "^5.0.0"
