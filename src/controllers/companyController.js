@@ -7,10 +7,10 @@ const AuthorizationError = require('../errors/AuthorizationError');
 
 // Create a new company
 exports.createCompany = async (req, res, next) => {
-  const { name, description, location, website, employeesNumber } = req.body;
+  const { name, description, location, website, employeesNumber, companyEmail } = req.body;
   const recruiterId = req.user._id;
 
-  if (!name || !description || !location || !employeesNumber) {
+  if (!name || !description || !location || !employeesNumber || !companyEmail) {
     return next(new ValidationError('Required fields are missing.'));
   }
 
@@ -37,7 +37,8 @@ exports.createCompany = async (req, res, next) => {
       image,
       location,
       website,
-      employeesNumber
+      employeesNumber,
+      companyEmail,
     });
 
     await company.save();
