@@ -30,7 +30,7 @@ userRoutes.get('/latest-resume-pdf-path', authMiddleware, userController.getLate
 
 userRoutes.post('/save-template', authMiddleware, userController.saveTemplate);
 
-userRoutes.post('/send-application', authMiddleware, userController.sendApplication);
+userRoutes.post('/send-application/:id', authMiddleware, userController.sendApplication);
 
 userRoutes.get('/template/:id', authMiddleware, userController.getTemplate);
 

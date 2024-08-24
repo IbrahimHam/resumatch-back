@@ -425,6 +425,7 @@ exports.getLatestResumePdfPath = async (req, res, next) => {
 exports.sendApplication = async (req, res, next) => {
   try {
     const { coverLetter, companyEmail, resumePdfPath } = req.body;
+    const jobId = req.params.id;
 
     if (!coverLetter || !companyEmail || !resumePdfPath) {
       return res.status(400).json({ message: 'Cover letter and resume PDF are required.' });
@@ -451,6 +452,13 @@ exports.sendApplication = async (req, res, next) => {
       ],
     };
 
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return next(new NotFoundError('User not found'));
+    }
+    user.appliedJobs.push(jobId);
+    await user.save();
+    
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: 'Application sent successfully!' });
